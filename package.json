@@ -1,0 +1,19 @@
+{
+  "name": "mavens_pnl",
+  "version": "1.0.0",
+  "description": "A script to export current pnl to a csv",
+  "main": "mavens_pnl.js",
+  "dependencies": {
+    "axios": "^0.18.0",
+    "command-line-args": "^5.0.2",
+    "csv": "^2.0.0",
+    "js-yaml": "^3.10.0",
+    "moment": "^2.20.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "MIT"
+}

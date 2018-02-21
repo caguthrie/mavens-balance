@@ -1,2 +1,5 @@
 .idea/
-secrets.yaml
+node_modules/
+archive/*.csv
+secrets.yml
+balances.csv
