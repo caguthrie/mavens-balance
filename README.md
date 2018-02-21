@@ -5,7 +5,7 @@ A script to export current Mavens balances to a csv
 ## Installation
  
 1) Run `npm i`
-2) Create `secrets.yaml` file with the following:
+2) Create `secrets.yml` file with the following:
     ```
     root: mavens url root
     password: your password
