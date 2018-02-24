@@ -81,7 +81,7 @@ function addToPnl(balancesNow){
             return;
         }
 
-        const newBalance = balancesNow[playerData[0]];
+        const newBalance = -((isNaN(playerData[playerData.length-1]) ? 0 : playerData[playerData.length-1]) - balancesNow[playerData[0]]);
         // Fall back to zero balance if player no longer exists
         playerData.push(newBalance || 0);
         if( isNaN(newBalance) ){
