@@ -116,10 +116,10 @@ function getCSVData(){
         const data = fs.readFileSync(filePath, 'utf8');
         return parse(data);
     } catch(e) {
-        if( e.errno === -2 ){
+        if( e.errno === -2 || e.errno === -4058 ){
             return [];
         } else {
-            console.log("Unable to read current_pnl.csv", e);
+            console.log("Unable to read balances.csv", e);
             process.exit(1);
         }
     }
