@@ -81,7 +81,14 @@ function addToPnl(balancesNow){
             return;
         }
 
-        const newBalance = -((isNaN(playerData[playerData.length-1]) ? 0 : playerData[playerData.length-1]) - balancesNow[playerData[0]]);
+        let newBalance;
+        if( playerData.length === 1 ){
+            newBalance = balancesNow[playerData[0]];
+        } else {
+            newBalance = balancesNow[playerData[0]] - playerData.filter((item, i) => i > 0)
+                                                                .reduce((memo, val) => parseInt(memo) + parseInt(val));
+        }
+
         // Fall back to zero balance if player no longer exists
         playerData.push(newBalance || 0);
         if( isNaN(newBalance) ){
@@ -126,6 +133,16 @@ function getCSVData(){
 }
 
 function writeCSVData(data){
+    //Sort names in case there were new players added
+    data.sort((a,b) => {
+        if( a[0].toUpperCase() < b[0].toUpperCase() )
+            return -1;
+        else if( a[0].toUpperCase() > b[0].toUpperCase() )
+            return 1;
+        else
+            return 0;
+    });
+
     const csvString = stringify(data);
     try {
         fs.writeFileSync(filePath, csvString, {encoding: 'utf8', flag: 'w'})
