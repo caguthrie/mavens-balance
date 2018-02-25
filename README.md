@@ -16,6 +16,8 @@ A script to export current Mavens balances to a csv
 Run the program, creating or appending to balances.csv: `node mavens_pnl.js`
 
 Run the program in archive mode, moving balances.csv to the archive folder with a datestamp: `node mavens_pnl.js -a`
+
+Transfer money between two players, which will not affect p/l calculations: `node mavens_pnl.js --transfer 50 --from player1 --to player2`
  
 ## License
  
