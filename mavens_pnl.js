@@ -43,11 +43,11 @@ try {
 }
 
 // Hit Mavens API
-axios.get(`${root}/api?password=${password}&JSON=Yes&Command=AccountsList&Fields=Player,Balance`)
+axios.get(`${root}/api?password=${password}&JSON=Yes&Command=AccountsList&Fields=Player,Balance,RingChips,RegChips`)
     .then(response => {
         const balancesNow = {};
         response.data.Player.forEach((player, i) => {
-            return balancesNow[player] = response.data.Balance[i];
+            return balancesNow[player] = response.data.Balance[i] + response.data.RingChips[i] + response.data.RegChips[i];
         });
         addToPnl(balancesNow);
     })
