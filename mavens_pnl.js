@@ -199,14 +199,16 @@ function checkPlayersAndTransferMoney(amount, to, from){
     }
     axios.get(`${root}/api?password=${password}&JSON=Yes&Command=AccountsList&Fields=Player`)
         .then(playersResponse => {
-            if( !playersResponse.data.Player.includes(to) ){
+            let toPlayerFromAPI = playersResponse.data.Player.find(p => p.toUpperCase() === to.toUpperCase());
+            let fromPlayerFromAPI = playersResponse.data.Player.find(p => p.toUpperCase() === from.toUpperCase());
+            if( !toPlayerFromAPI ){
                 console.log(`Player ${to} is an invalid player.  Did you misspell?  No changes made.`);
                 process.exit(1);
-            } else if( !playersResponse.data.Player.includes(from) ){
+            } else if( !fromPlayerFromAPI ){
                 console.log(`Player ${from} is an invalid player.  Did you misspell?  No changes made.`);
                 process.exit(1);
             } else {
-                transferMoney(amount, to, from);
+                transferMoney(amount, toPlayerFromAPI, fromPlayerFromAPI);
             }
         })
         .catch(err => {
