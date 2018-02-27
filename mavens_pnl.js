@@ -72,11 +72,11 @@ if( transfer || to || from ){
     checkPlayersAndTransferMoney(parseInt(transfer), to, from)
 } else {
     // Hit Mavens API for current balances
-    axios.get(`${root}/api?password=${password}&JSON=Yes&Command=AccountsList&Fields=Player,Balance,RingChips,RegChips`)
+    axios.get(`${root}/api?password=${password}&JSON=Yes&Command=AccountsList&Fields=Player,RealName,Balance,RingChips,RegChips`)
         .then(response => {
             const balancesNow = {};
             const transferData = getCSVDataWithFallback(transfersFile);
-            response.data.Player.forEach((player, i) => {
+            response.data.RealName.forEach((player, i) => {
                 const playerTransfer = transferData.find(row => row[0] === player);
                 let transferBalance = 0;
                 if( playerTransfer ){
@@ -197,18 +197,18 @@ function checkPlayersAndTransferMoney(amount, to, from){
         console.log(`--amount needs to be an amount of money. Found "${options.amount}" instead.  No changes made.`);
         process.exit(1);
     }
-    axios.get(`${root}/api?password=${password}&JSON=Yes&Command=AccountsList&Fields=Player`)
+    axios.get(`${root}/api?password=${password}&JSON=Yes&Command=AccountsList&Fields=Player,RealName`)
         .then(playersResponse => {
-            let toPlayerFromAPI = playersResponse.data.Player.find(p => p.toUpperCase() === to.toUpperCase());
-            let fromPlayerFromAPI = playersResponse.data.Player.find(p => p.toUpperCase() === from.toUpperCase());
-            if( !toPlayerFromAPI ){
+            let toPlayerFromAPIIndex = playersResponse.data.Player.findIndex(p => p.toUpperCase() === to.toUpperCase());
+            let fromPlayerFromAPIIndex = playersResponse.data.Player.findIndex(p => p.toUpperCase() === from.toUpperCase());
+            if( toPlayerFromAPIIndex === -1 ){
                 console.log(`Player ${to} is an invalid player.  Did you misspell?  No changes made.`);
                 process.exit(1);
-            } else if( !fromPlayerFromAPI ){
+            } else if( fromPlayerFromAPIIndex === -1 ){
                 console.log(`Player ${from} is an invalid player.  Did you misspell?  No changes made.`);
                 process.exit(1);
             } else {
-                transferMoney(amount, toPlayerFromAPI, fromPlayerFromAPI);
+                transferMoney(amount, playersResponse.data, toPlayerFromAPIIndex, fromPlayerFromAPIIndex);
             }
         })
         .catch(err => {
@@ -217,17 +217,17 @@ function checkPlayersAndTransferMoney(amount, to, from){
         });
 }
 
-function transferMoney(amount, to, from){
-    axios.get(`${root}/api?password=${password}&JSON=Yes&Command=AccountsIncBalance&Player=${to}&Amount=${amount}`)
+function transferMoney(amount, data, toIndex, fromIndex){
+    axios.get(`${root}/api?password=${password}&JSON=Yes&Command=AccountsIncBalance&Player=${data.Player[toIndex]}&Amount=${amount}`)
         .then(r1 => {
-            axios.get(`${root}/api?password=${password}&JSON=Yes&Command=AccountsDecBalance&Player=${from}&Amount=${amount}`)
+            axios.get(`${root}/api?password=${password}&JSON=Yes&Command=AccountsDecBalance&Player=${data.Player[fromIndex]}&Amount=${amount}`)
                 .then(r1 => {
-                    handleTransferCSV(amount, to, from);
-                    console.log(`Transferred ${amount} from ${from} to ${to} successfully!`);
+                    handleTransferCSV(amount, data.RealName[toIndex], data.RealName[fromIndex]);
+                    console.log(`Transferred ${amount} from ${data.Player[fromIndex]} (${data.RealName[fromIndex]}) to ${data.Player[toIndex]} (${data.RealName[toIndex]}) successfully!`);
                     process.exit(0);
                 })
                 .catch(err2 => {
-                    console.log(`Added to ${to}'s balance, but the subtracting from ${from}'s balance failed!  Please un-adjust manually and try again.  Unable to contact server`);
+                    console.log(`Added to ${data.Player[toIndex]}'s balance, but the subtracting from ${data.Player[fromIndex]}'s balance failed!  Please un-adjust manually and try again.  Unable to contact server`);
                     process.exit(1);
                 });
         })
