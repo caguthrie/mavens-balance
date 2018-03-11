@@ -71,6 +71,7 @@ if( transfer || to || from ){
 
     checkPlayersAndTransferMoney(parseInt(transfer), to, from)
 } else {
+    axios.get(`http://localhost:3000/pnl/fetch`);
     // Hit Mavens API for current balances
     axios.get(`${root}/api?password=${password}&JSON=Yes&Command=AccountsList&Fields=Player,RealName,Balance,RingChips,RegChips`)
         .then(response => {
